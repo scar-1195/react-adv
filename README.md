@@ -1,27 +1,34 @@
-# React adv
+# LazyLoad by modules
 
-This application is the shell to practice lazyload (**react-router-dom-6**) and study different design patterns that I will be adding in different branches in my free time
+In this way we can make a lazy load that brings different modules and not just one
 
+## **how to use?**
 
-## LazyLoad
-It is a strategy that delays the loading of some files or modules
+First we will create a layout that could be our dashboard or the user module or the one that separates our authentication system.
 
-### **how to use?**
-Components that you want to call with a lazy load need to have a default export.
+remembering that every module with lazy loading needs its export by default
 
 ```
-export const LazyHomePage = () => {
-  return <h1>Lazy Home</h1>;
+export const LazyLayout = () => {
+  return (
+    <div>
+      <h1>Lazy Layout Page</h1>
+    </div>
+  );
 };
 
-export default LazyHomePage;
+export default LazyLayout;
+
 ```
 
-then inside our routes files we will use the react lazy function creating a constant and import our component inside that function.
+This component is responsible for rendering our child routes.
+
+We call our component in the routes file. It is important to note that in the routes file we enclose the path between slashes with an asterisk to indicate that everything that enters the lazyload route will be loaded with the layout module.
 
 ```
 import type { LazyExoticComponent } from 'react';
 import { lazy } from 'react';
+import { NoLazy } from '../01-lazyload/pages';
 
 type JSXComponent = () => JSX.Element;
 
@@ -32,50 +39,54 @@ interface Route {
   name: string;
 }
 
-const lazyHome = lazy(
-  async () => await import('../01-lazyload/pages/LazyHomePage'),
+const lazyLayout = lazy(
+  async () => await import('../01-lazyload/layout/LazyLayout'),
 );
 
 export const routes: Route[] = [
   {
-    path: '/home',
-    to: 'home',
-    Component: lazyHome,
-    name: 'Home',
-  },
+    path: '/lazyload/*',
+    to: '/lazyload/',
+    Component: lazyLayout,
+    name: 'Lazy Layout',
+  }
 ];
 
-```
-
-Finally we wrap our router with the **suspense** component
 
 ```
-import { Suspense } from 'react';
-import { BrowserRouter, Navigate, Routes, Route } from 'react-router-dom';
-import { Sidebar } from '../01-lazyload/components/Sidebar';
-import { routes } from './';
 
-export const Navigation = () => {
+Now we just create our routes inside the layout without lazy loading
+
+```
+import { NavLink, Route, Routes, Navigate } from 'react-router-dom';
+import { LazyAboutPage, LazyHomePage, LazyUsersPage } from '../pages';
+
+export const LazyLayout = () => {
   return (
-    <Suspense fallback={<span>Loading...</span>}>
-      <BrowserRouter>
-        <div className='main-layout'>
-          <Sidebar />
-          <Routes>
-            {routes.map(route => (
-              <Route
-                key={route.path}
-                path={route.path}
-                element={<route.Component />}
-              />
-            ))}
-            <Route path='/*' element={<Navigate to={routes[0].to} replace />} />
-          </Routes>
-        </div>
-      </BrowserRouter>
-    </Suspense>
+    <div>
+      <h1>Lazy Layout Page</h1>
+      <ul>
+        <li>
+          <NavLink to='lazy1'>Lazy Nested 1</NavLink>
+        </li>
+        <li>
+          <NavLink to='lazy2'>Lazy Nested 2</NavLink>
+        </li>
+        <li>
+          <NavLink to='lazy3'>Lazy Nested 3</NavLink>
+        </li>
+      </ul>
+
+      <Routes>
+        <Route path='lazy1' element={<LazyHomePage />} />
+        <Route path='lazy2' element={<LazyAboutPage />} />
+        <Route path='lazy3' element={<LazyUsersPage />} />
+        <Route path='*' element={<Navigate replace to='lazy1' />} />
+      </Routes>
+    </div>
   );
 };
 
+export default LazyLayout;
+
 ```
-The **fallback** attribute is used to render a component while lazy loading is done
