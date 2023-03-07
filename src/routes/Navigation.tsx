@@ -1,46 +1,26 @@
-import {
-  BrowserRouter,
-  Navigate,
-  NavLink,
-  Routes,
-  Route,
-} from 'react-router-dom';
-import { activeClass } from '../helpers/activeClass';
-import logo from '../assets/react.svg';
+import { Suspense } from 'react';
+import { BrowserRouter, Navigate, Routes, Route } from 'react-router-dom';
+import { Sidebar } from '../01-lazyload/components/Sidebar';
+import { routes } from './';
 
 export const Navigation = () => {
   return (
-    <BrowserRouter>
-      <div className='main-layout'>
-        <nav>
-          <img id='logo' src={logo} alt='React Logo' />
-          <ul>
-            <li>
-              <NavLink to='/home' className={activeClass}>
-                Home
-              </NavLink>
-            </li>
-            <li>
-              <NavLink to='/about' className={activeClass}>
-                About
-              </NavLink>
-            </li>
-            <li>
-              <NavLink to='/users' className={activeClass}>
-                Users
-              </NavLink>
-            </li>
-          </ul>
-        </nav>
-
-        <Routes>
-          <Route path='about' element={<h1>About Page</h1>} />
-          <Route path='users' element={<h1>Users Page</h1>} />
-          <Route path='home' element={<h1>Home Page</h1>} />
-
-          <Route path='/*' element={<Navigate to='/home' replace />} />
-        </Routes>
-      </div>
-    </BrowserRouter>
+    <Suspense fallback={<span>Loading...</span>}>
+      <BrowserRouter>
+        <div className='main-layout'>
+          <Sidebar />
+          <Routes>
+            {routes.map(route => (
+              <Route
+                key={route.path}
+                path={route.path}
+                element={<route.Component />}
+              />
+            ))}
+            <Route path='/*' element={<Navigate to={routes[0].to} replace />} />
+          </Routes>
+        </div>
+      </BrowserRouter>
+    </Suspense>
   );
 };
