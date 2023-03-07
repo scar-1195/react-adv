@@ -1,12 +1,9 @@
-# React adv
+# LazyLoad
 
-This application is the shell to practice lazyload (**react-router-dom-6**) and study different design patterns that I will be adding in different branches in my free time
-
-
-## LazyLoad
 It is a strategy that delays the loading of some files or modules
 
-### **how to use?**
+## **how to use?**
+
 Components that you want to call with a lazy load need to have a default export.
 
 ```
@@ -78,4 +75,5 @@ export const Navigation = () => {
 };
 
 ```
+
 The **fallback** attribute is used to render a component while lazy loading is done
