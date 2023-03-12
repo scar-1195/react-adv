@@ -9,3 +9,8 @@ export interface ProductContextProps {
   onIncreaseBy: (val: number) => void;
   product: Product;
 }
+
+export interface onChangeArgs {
+  product: Product;
+  count: number;
+}
